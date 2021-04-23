@@ -1,0 +1,25 @@
+{
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "dbx123.database.windows.net",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "az1",
+            "database": "db",
+            "username": "ahmed",
+            "password": "Morsi123*"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:WebApplication1}/app.db",
+            "name": "aa"
+        }
+    ]
+}
