@@ -1,13 +1,12 @@
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-    public class SignalController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class SignalController : ControllerBase
     {
-        // GET
-        public IActionResult Index()
-        {
-            return View();
-        }
+        
     }
 }
