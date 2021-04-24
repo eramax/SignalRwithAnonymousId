@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Lib;
 using WebApplication1.Models;
@@ -13,16 +14,25 @@ namespace WebApplication1.Controllers
     public class ProductController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<SignalRHub> hub;
 
-        public ProductController(AppDbContext context)
+        public ProductController(AppDbContext context, IHubContext<SignalRHub> hub)
         {
             _context = context;
+            this.hub = hub;
         }
 
         // GET: Product
         public async Task<IActionResult> Index()
         {
             return View(await _context.Products.ToListAsync());
+        }
+
+        [HttpGet]
+        public IActionResult GetProducts()
+        {
+            var res = _context.Products.ToList();
+            return Ok(res);
         }
 
         // GET: Product/Details/5
@@ -49,9 +59,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        // POST: Product/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Stock")] Product product)
@@ -60,6 +68,7 @@ namespace WebApplication1.Controllers
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                await hub.Clients.All.SendAsync("ProductsChanged");
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -99,6 +108,7 @@ namespace WebApplication1.Controllers
                 {
                     _context.Update(product);
                     await _context.SaveChangesAsync();
+                    await hub.Clients.All.SendAsync("ProductsChanged");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -142,6 +152,7 @@ namespace WebApplication1.Controllers
             var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+            await hub.Clients.All.SendAsync("ProductsChanged");
             return RedirectToAction(nameof(Index));
         }
 

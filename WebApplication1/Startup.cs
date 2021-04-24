@@ -61,7 +61,7 @@ namespace WebApplication1
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                endpoints.MapHub<SignalRHub>("/signalrserver");
+                endpoints.MapHub<SignalRHub>("/hub");
             });
         }
     }
