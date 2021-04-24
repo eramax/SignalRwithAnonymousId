@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReturnTrue.AspNetCore.Identity.Anonymous;
 using WebApplication1.Lib;
 
 namespace WebApplication1
@@ -27,11 +24,13 @@ namespace WebApplication1
         {
             services.AddControllersWithViews();
             services.AddSignalR();
+            services.AddResponseCompression();
             services.AddControllers().AddJsonOptions(opt =>
             {
                 opt.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
             services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(Configuration.GetConnectionString("cs")));
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,9 +50,11 @@ namespace WebApplication1
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseAnonymousId();
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseResponseCompression();
 
             app.UseEndpoints(endpoints =>
             {

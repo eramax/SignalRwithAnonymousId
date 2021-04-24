@@ -21,11 +21,18 @@
     })
 }
 
+
 $(() => {
-    console.log("Hello")
+    console.log("Hello SignalR");
     LoadProducts();
-    var connection = new signalR.HubConnectionBuilder().withUrl("hub").build();
-    connection.start();
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("hub")
+        .withAutomaticReconnect([0, 0, 10000]).build();
+
     connection.on("ProductsChanged", LoadProducts);
-    
+    connection.onreconnecting(error => console.log(`Connection lost due to error "${error}". Reconnecting.`));
+    connection.onreconnected(connectionId => console.log(`Connection reestablished. Connected with connectionId "${connectionId}".`));
+    connection.start()
+        .then(() => console.log('Connection started'))
+        .catch(err => console.log('Error while starting connection: ' + err));   
 })
